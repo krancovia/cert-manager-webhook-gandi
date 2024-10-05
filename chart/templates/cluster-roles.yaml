@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager-webhook-gandi
+  labels:
+    {{- include "labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager-webhook-gandi:domain-solver
+  labels:
+    {{- include "labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - acme.krancovia.io
+  resources:
+  - "*"
+  verbs:
+  - create

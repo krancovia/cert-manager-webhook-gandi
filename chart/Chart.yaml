@@ -1,0 +1,11 @@
+apiVersion: v2
+name: cert-manager-webhook-gandi
+description: Enable cert-manager to complete DNS challenges with Gandi LiveDNS
+type: application
+version: 0.1.0
+appVersion: v0.1.0
+sources:
+- https://github.com/krancovia/cert-manager-webhook-gandi
+maintainers:
+- name: Kent Rancourt
+  email: kent.rancourt@gmail.com
