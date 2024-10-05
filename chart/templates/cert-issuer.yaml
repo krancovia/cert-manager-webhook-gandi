@@ -1,0 +1,40 @@
+# This cert issuer is used for signing a CA certificate.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cert-manager-webhook-gandi-selfsign
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+---
+# This is the CA certificate that will be used to sign the webhook server's own
+# certificate.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-manager-webhook-gandi-ca-cert
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+spec:
+  issuerRef:
+    name: cert-manager-webhook-gandi-selfsign
+  commonName: "ca.cert-manager-webhook-gandi.cert-manager"
+  isCA: true
+  duration: 43800h # 5 years
+  secretName: cert-manager-webhook-gandi-ca-cert
+---
+# This is is the Issuer that will use our CA to create and sign the webhook
+# server's own certificate.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cert-manager-webhook-gandi-ca
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+spec:
+  ca:
+    secretName: cert-manager-webhook-gandi-ca-cert

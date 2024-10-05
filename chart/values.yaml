@@ -1,0 +1,41 @@
+## Default values for cert-manager-webhook-gandi.
+## A human-readable version can be found in the chart README.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+
+## @section Image Parameters
+image:
+  ## @param image.repository Image repository of cert-manager-webhook-gandi
+  repository: ghcr.io/krancovia/cert-manager-webhook-gandi
+  ## @param image.tag Overrides the image tag. The default tag is the value of `.Chart.AppVersion`
+  tag: ""
+  ## @param image.pullPolicy Image pull policy
+  pullPolicy: IfNotPresent
+
+## @section Deployment Parameters
+deployment:
+  ## @param deployment.additionalLabels Additional labels to add to the Deployment.
+  additionalLabels: {}
+  ## @param deployment.annotations Annotations to add to the Deployment.
+  annotations: {}
+
+## @section Pod Parameters
+pod:
+  ## @param pod.additionalLabels Additional labels to add to Pods.
+  additionalLabels: {}
+  ## @param pod.annotations Annotations to add to Pods.
+  annotations: {}
+  ## @param pod.resources Resources limits and requests for containers.
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  ## @param pod.nodeSelector Node selector for pods.
+  nodeSelector: {}
+  ## @param pod.tolerations Tolerations for pods.
+  tolerations: []
+  ## @param pod.affinity Specifies pod affinity.
+  affinity: {}

@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-manager-webhook-gandi
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+    {{- with .Values.deployment.additionalLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.deployment.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "labels" . | nindent 8 }}
+        {{- with .Values.pod.additionalLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.pod.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: cert-manager-webhook-gandi
+      containers:
+      - name: webhook
+        image: {{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - /usr/local/bin/cert-manager-webhook-gandi
+        args:
+        - --tls-cert-file=/tls/tls.crt
+        - --tls-private-key-file=/tls/tls.key
+        env:
+        - name: GOMEMLIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: webhook
+              resource: limits.memory
+        - name: GOMAXPROCS
+          valueFrom:
+            resourceFieldRef:
+              containerName: webhook
+              resource: limits.cpu
+        - name: GROUP_NAME
+          value: acme.krancovia.io
+        ports:
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: https
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /healthz
+            port: https
+        volumeMounts:
+        - name: certs
+          mountPath: /tls
+          readOnly: true
+        resources:
+          {{ toYaml .Values.pod.resources | indent 10 }}
+      volumes:
+      - name: certs
+        secret:
+          secretName: cert-manager-webhook-gandi-cert
+      {{- with .Values.pod.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.pod.affinity }}
+      affinity:
+        {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.pod.tolerations }}
+        tolerations:
+          {{ toYaml . | indent 8 }}
+      {{- end }}
