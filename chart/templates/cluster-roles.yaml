@@ -1,0 +1,32 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager-webhook-gandi
+  labels:
+    {{- include "labels" . | nindent 4 }}
+rules:
+# This allows the webhook server to read one specific Secret containing a Gandi
+# PAT in any namespace.
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  resourceNames:
+  - gandi-access-token
+  verbs:
+  - get
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager-webhook-gandi:domain-solver
+  labels:
+    {{- include "labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - acme.krancovia.io
+  resources:
+  - "*"
+  verbs:
+  - create

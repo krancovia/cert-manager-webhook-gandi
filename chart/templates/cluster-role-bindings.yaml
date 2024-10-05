@@ -1,0 +1,50 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-webhook-gandi
+  labels:
+    {{- include "labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-webhook-gandi
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  namespace: {{ .Release.Namespace }}
+  name: cert-manager-webhook-gandi
+---
+# This allows the webhook server to delegate auth decisions to the Kubernetes
+# API server.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-webhook-gandi:auth-delegator
+  labels:
+    {{- include "labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  namespace: {{ .Release.Namespace }}
+  name: cert-manager-webhook-gandi
+---
+# This allows cert-manager to utilize our API extension.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager:cert-manager-webhook-gandi
+  labels:
+    {{- include "labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-webhook-gandi:domain-solver
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  namespace: {{ .Release.Namespace }}
+  name: cert-manager

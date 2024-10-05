@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: issuer-example
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gandi-access-token
+  namespace: issuer-example
+type: Opaque
+stringData:
+  token: $TOKEN
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-gandi-staging
+  namespace: issuer-example
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: $EMAIL
+    privateKeySecretRef:
+      name: letsencrypt-gandi-staging
+    solvers:
+    - dns01:
+        webhook:
+          groupName: acme.krancovia.io
+          solverName: gandi
+          config:
+            apiKeySecretRef:
+              name: gandi-access-token
+              key: token
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: issuer-example
+  namespace: issuer-example
+spec:
+  commonName: issuer-example.$ZONE
+  dnsNames:
+  - issuer-example.$ZONE
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: letsencrypt-gandi-staging
+  secretName: issuer-example-cert
