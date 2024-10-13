@@ -3,7 +3,7 @@ module github.com/krancovia/cert-manager-webhook-gandi
 go 1.23
 
 require (
-	github.com/cert-manager/cert-manager v1.16.0
+	github.com/cert-manager/cert-manager v1.16.1
 	github.com/miekg/dns v1.1.62
 	github.com/stretchr/testify v1.9.0
 	k8s.io/api v0.31.1
