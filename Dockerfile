@@ -1,7 +1,7 @@
 ####################################################################################################
 # build
 ####################################################################################################
-FROM --platform=$BUILDPLATFORM golang:1.23.1-bookworm AS build
+FROM --platform=$BUILDPLATFORM golang:1.23.2-bookworm AS build
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -31,7 +31,7 @@ RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
 # - supports development
 # - not used for official image builds
 ####################################################################################################
-FROM --platform=$BUILDPLATFORM golang:1.23.1-bookworm AS dev
+FROM --platform=$BUILDPLATFORM golang:1.23.2-bookworm AS dev
 
 COPY bin/cert-manager-webhook-gandi /usr/local/bin/cert-manager-webhook-gandi
 
